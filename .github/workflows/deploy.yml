@@ -9,35 +9,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: site
-        path: site
+      # Build step: make sure site folder exists
+      - name: Build site
+        run: |
+          mkdir -p site
+          echo "<h1>Hello World from CI/CD!</h1>" > site/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: site
-        path: site   # <-- FIX HERE
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site
 
-    - name: Deploy to GitHub Pages
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: site
+      - name: Deploy to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
 
   publish:
     needs: deploy
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write     # REQUIRED for GitHub Pages
+      pages: write        # REQUIRED to publish site
+      contents: read      # REQUIRED to read artifacts
+
     steps:
-    - name: Publish
-      uses: actions/deploy-pages@v4
+      - name: Publish
+        uses: actions/deploy-pages@v4
