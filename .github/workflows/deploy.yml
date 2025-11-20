@@ -2,7 +2,7 @@ name: Deploy Website
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -12,16 +12,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Ensure site directory exists
-      run: |
-        mkdir -p site
-        ls -R
-
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: site
-        path: ./site/      # <-- FIXED
+        path: site
 
   deploy:
     needs: build
@@ -32,11 +27,12 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: site
+        path: site   # <-- FIX HERE
 
     - name: Deploy to GitHub Pages
       uses: actions/upload-pages-artifact@v3
       with:
-        path: ./site/     # <-- FIXED
+        path: site
 
   publish:
     needs: deploy
