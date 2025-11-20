@@ -9,34 +9,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: site
-        path: site
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site   # Folder in your repo
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: site
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: ./site   # <-- FIXED: Now it extracts to ./site
 
-    - name: Deploy to GitHub Pages
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: site
+      - name: Verify site folder exists
+        run: ls -R .
+
+      - name: Deploy to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site   # <-- FIXED: This folder now exists
 
   publish:
     needs: deploy
     runs-on: ubuntu-latest
 
     steps:
-    - name: Publish
-      uses: actions/deploy-pages@v4
+      - name: Publish
+        uses: actions/deploy-pages@v4
