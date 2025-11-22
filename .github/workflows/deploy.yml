@@ -4,6 +4,11 @@ on:
   push:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
 
   build:
@@ -44,6 +49,19 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: site
+        path: site
+
+    # 🔍 DEBUG WORKSPACE CONTENTS
+    - name: Debug workspace
+      run: |
+        echo "Workspace listing:"
+        ls -la
+
+    # 🔍 DEBUG SITE FOLDER (Before tar / upload)
+    - name: Debug site folder
+      run: |
+        echo "Checking site folder content:"
+        ls -la site || echo "SITE FOLDER NOT FOUND!"
 
     - name: Upload Pages artifact
       uses: actions/upload-pages-artifact@v3
@@ -53,9 +71,6 @@ jobs:
   publish:
     needs: deploy
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
     - name: Publish to GitHub Pages
